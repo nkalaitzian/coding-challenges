@@ -27,7 +27,7 @@ def product_of_down(y, x)
 end
 
 def product_of_diagonal_right_down(y, x)
-  ([@array[y][x]] + 3.times.map do |time|
+  ([@array[y][x]] + (1..3).map do |time|
     y_target = y + time
     x_target = x + time
     next if y_target > @array.count - 1 || x_target > @array.count - 1 || y_target < 0 || x_target < 0
@@ -36,7 +36,7 @@ def product_of_diagonal_right_down(y, x)
 end
 
 def product_of_diagonal_left_down(y, x)
-  ([@array[y][x]] + 3.times.map do |time|
+  ([@array[y][x]] + (1..3).map do |time|
     y_target = y + time
     x_target = x - time
     next if y_target > @array.count - 1 || x_target > @array.count - 1 || y_target < 0 || x_target < 0
@@ -45,7 +45,7 @@ def product_of_diagonal_left_down(y, x)
 end
 
 def product_of_diagonal_left_up(y, x)
-  ([@array[y][x]] + 3.times.map do |time|
+  ([@array[y][x]] + (1..3).map do |time|
     y_target = y - time
     x_target = x - time
     next if y_target > @array.count - 1 || x_target > @array.count - 1 || y_target < 0 || x_target < 0
@@ -54,7 +54,7 @@ def product_of_diagonal_left_up(y, x)
 end
 
 def product_of_diagonal_right_up(y, x)
-  ([@array[y][x]] + 3.times.map do |time|
+  ([@array[y][x]] + (1..3).map do |time|
     y_target = y - time
     x_target = x + time
     next if y_target > @array.count - 1 || x_target > @array.count - 1 || y_target < 0 || x_target < 0
