@@ -41,6 +41,7 @@ grouped_ransacks = (0..runsacks.length - 1).map do |i|
   next if i % 3 != 0
   runsacks[i..i + 2]
 end.compact
+
 summed_badges = grouped_ransacks.map.with_index(1) do |grouped_ransack, i|
   common_char = grouped_ransack.first.split("").select do |char|
     grouped_ransack[1].include?(char) && grouped_ransack[2].include?(char)
