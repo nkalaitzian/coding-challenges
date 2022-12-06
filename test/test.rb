@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+
+# https://www.2n.pl/blog/basics-of-curses-library-in-ruby-make-awesome-terminal-apps
 require 'curses'
 
 include Curses
@@ -12,30 +14,30 @@ MIN_INDEX = 0
 
 @index = 0
 
-init_screen
-start_color
+init_screen # Initializes a standard screen. At this point the present state of our terminal is saved and the alternate screen buffer is turned on
+start_color # Initializes the color attributes for terminals that support it.
 
 init_pair(1, 1, 0)
-curs_set(0)
-noecho
+curs_set(0) # Hides the cursor
+noecho # Disables characters typed by the user to be echoed by Curses.getch as they are typed.
 
 begin
   win = Curses::Window.new(0, 0, 1, 2)
 
   loop do
-    win.setpos(0, 0)
+    win.setpos(0, 0)  # we set the cursor on the starting position
 
-    ALIASES.each.with_index(0) do |str, index|
-      if index == @index
-        win.attron(color_pair(1)) { win << str }
+    ALIASES.each.with_index(0) do |str, index|  # we iterate through our data
+      if index == @index  # if the element is currently chosen...
+        win.attron(color_pair(1)) { win << str }  #...we color it red
       else
-        win << str
+        win << str  # rest of the elements are output with a default color
       end
-      clrtoeol
-      win << "\n"
+      clrtoeol  # clear to end of line
+      win << "\n"  # and move to next
     end
-    (win.maxy - win.cury).times { win.deleteln }
-    win.refresh
+    (win.maxy - win.cury).times { win.deleteln } # clear the rest of the screen
+    win.refresh # apply the changes to the screen
 
     str = win.getch.to_s
     case str
