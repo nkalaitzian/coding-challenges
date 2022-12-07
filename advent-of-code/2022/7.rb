@@ -1,27 +1,36 @@
+# frozen_string_literal: true
+
 file_name = '7.input.txt'
 file = File.expand_path(file_name)
-file_contents = File.open(file, 'r').read.lines.first
+file_contents = File.read(file).lines.map { |l| l.gsub("\n", '') }
 
 class FileStructure
-  ROOT = '/'.freeze
+  ROOT = '/'
   TYPES = [:file, :folder].freeze
+  MIN_FOLDER_THRESHOLD = 100_000.freeze
+  MAX_SPACE_THRESHOLD = 40_000_000.freeze
 
   attr_reader :name, :size, :type
-  attr_accessor :children, :parent_dir
+  attr_accessor :children, :parent_dir, :level
 
-  def initialize(name, type, size)
-    @type = type.to_sym
-    @name = name
-    if type == :file
-      @size = size
-    else
-      @size = 0
-    end
-    @children = []
+  def self.root
+    $root ||= new('/', :folder, size: 0)
+  end
 
-    if name == '/' && !$root.nil?
-      raise 'Root already exists.'
-    end
+  def tree
+    puts "#{' ' * level}- (#{type == :folder ? 'd' : 'f'}) #{name} (#{total_size})"
+    children.each(&:tree) if type == :folder
+
+    nil
+  end
+
+  def points_of_interest
+    results = []
+
+    results << self.total_size if total_size < MIN_FOLDER_THRESHOLD && type == :folder
+    results += children.map(&:points_of_interest).flatten if type == :folder
+
+    results
   end
 
   def total_size
@@ -32,8 +41,18 @@ class FileStructure
     end
   end
 
-  def self.root
-    $root ||= new('/', :folder, 0)
+  def initialize(name, type, size: 0, level: 0)
+    return if name == '/' && $root
+
+    @type = type.to_sym
+    @name = name
+    @size = if type == :file
+              size.to_i
+            else
+              0
+            end
+    @children = []
+    @level = level
   end
 
   def cd(target)
@@ -44,17 +63,33 @@ class FileStructure
     end
   end
 
-  def add_sub(child)
+  def add_child(child)
+    return false if type == :file
+
     if @children.select { |c| c.name == child.name && c.type == child.type }.any?
       raise "Cannot create child #{child.name}. Structure already exists"
-    else
-      @children << child
-      child.parent_dir = self
     end
+
+    @children += [child]
+    child.parent_dir = self
+    child.level = level + 1
+    true
   end
 
-  def self.file_tree
-    
+  def total_size_after_cleanup
+    $root.total_size - total_size
+  end
+
+  def will_cleanup_be_enough?
+    total_size_after_cleanup < MAX_SPACE_THRESHOLD && type == :folder
+  end
+
+  def cleanup_space
+    candidates = []
+    candidates << self if will_cleanup_be_enough?
+    candidates += children.map(&:cleanup_space).flatten.compact.select(&:will_cleanup_be_enough?)
+
+    candidates.min_by(&:total_size)
   end
 
   private
@@ -64,11 +99,10 @@ class FileStructure
   end
 
   def go_in(target)
-    if children.map(&:name).include?(target)
-      children.select { |c| c.name == target }.first
-    else
-      raise 'Could not find child dir'
-    end
+    raise "Could not find child dir '#{target}'" unless children.map(&:name).include?(target)
+
+    # self
+    children.select { |c| c.name == target }.first
   end
 
   def calculate_folder_size
@@ -80,3 +114,28 @@ class FileStructure
 end
 
 root = FileStructure.root
+current_dir = root
+file_contents[1..].each do |fc|
+  case fc
+  when /\$ cd /
+    current_dir = current_dir.cd(fc.gsub('$ cd ', '').gsub(' ', ''))
+  when /\$ ls /
+    next
+  when /(\d)+ /
+    size = fc.split.first
+    name = fc.split.last
+    f = FileStructure.new(name, :file, size: size)
+    current_dir.add_child(f)
+  when /dir /
+    dir_name = fc.split.last
+    dir = FileStructure.new(dir_name, :folder, size: 0)
+    current_dir.add_child(dir)
+  end
+end
+
+# root.tree
+root.points_of_interest.sum
+# 5724164 too high
+# 1555642 just right
+candidate = root.cleanup_space.total_size
+# 5974547
