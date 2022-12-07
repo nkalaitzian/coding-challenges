@@ -134,8 +134,8 @@ file_contents[1..].each do |fc|
 end
 
 # root.tree
-root.points_of_interest.sum
+puts "Total size of folders <100_000: #{root.points_of_interest.sum}"
 # 5724164 too high
 # 1555642 just right
-candidate = root.cleanup_space.total_size
+puts "Total size that needs cleanup: #{root.cleanup_space.total_size}"
 # 5974547
