@@ -1,1 +1,26 @@
-inherit_from: ~/.rubocop.yml
+Style/Encoding:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 100
+
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+Naming/VariableName:
+  EnforcedStyle: snake_case
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+Style/MultilineBlockChain:
+  Enabled: false
+
+AllCops:
+  NewCops: enable
