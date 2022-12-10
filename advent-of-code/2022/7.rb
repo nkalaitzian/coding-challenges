@@ -135,7 +135,9 @@ end
 
 # root.tree
 puts "Total size of folders <100_000: #{root.points_of_interest.sum}"
-# 5724164 too high
-# 1555642 just right
+# Total size of folders <100_000: 1555642
+
+puts "Folder that needs cleanup: #{root.cleanup_space.name}"
+# Folder that needs cleanup: mqqlhnvh
 puts "Total size that needs cleanup: #{root.cleanup_space.total_size}"
-# 5974547
+# Total size that needs cleanup: 5974547
