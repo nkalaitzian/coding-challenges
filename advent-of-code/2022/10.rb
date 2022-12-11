@@ -63,7 +63,7 @@ instructions.each do |i|
   when /addx\s(-)?(\d)+/
     cpu.addx(i.gsub('addx ', ''))
   end
-end; nil
+end
 
 # [20, 60, 100, 140, 180, 220].map do |cycle|
 #   cpu.register_at_cycle(cycle) * cycle
@@ -74,13 +74,14 @@ crt_lines = [(1..40).to_a, (41..80).to_a, (81..120).to_a, (121..160).to_a, (161.
 crt_lines.each do |row|
   line = '###.....................................'.chars
   row.each.with_index(1) do |pixel, column|
-    line[column - 1] = cpu.pixel_at(pixel, column-1)
+    line[column - 1] = cpu.pixel_at(pixel, column - 1)
   end
   puts line.join
 end; nil
 
-# line = '###.....................................'.chars
-# (1..40).each.with_index(1) do |pixel, column|
-#   line[column - 1] = cpu.pixel_at(pixel, column-1)
-#   puts line.join
-# end; nil
+###...##..####.####.#..#.#..#.###..#..#.
+#..#.#..#....#.#....#..#.#..#.#..#.#.#..
+#..#.#......#..###..####.#..#.#..#.##...
+###..#.##..#...#....#..#.#..#.###..#.#..
+#.#..#..#.#....#....#..#.#..#.#.#..#.#..
+#..#..###.####.####.#..#..##..#..#.#..#.
