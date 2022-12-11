@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Monkey
   @all_monkeys = []
   @round = 0
@@ -10,6 +8,7 @@ class Monkey
   def self.build
     @all_monkeys = []
     @round = 0
+    @tests_lcm = nil
     file_name = '11.input.txt'
     # file_name = '11.test.txt'
     file = File.expand_path(file_name)
@@ -48,7 +47,7 @@ class Monkey
   end
 
   def self.tests_lcm
-    @all_monkeys.map(&:test).inject(:lcm)
+    @tests_lcm ||= @all_monkeys.map(&:test).inject(:lcm)
   end
 
   def initialize(idx, starting_items, operation, test, true_conditions, false_conditions)
