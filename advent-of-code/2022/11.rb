@@ -1,37 +1,54 @@
+# frozen_string_literal: true
+
 class Monkey
-  @@all_monkeys = []
-  @@round = 0
+  @all_monkeys = []
+  @round = 0
 
   attr_reader :idx, :starting_items, :operation, :test, :true_conditions, :false_conditions
   attr_accessor :items, :total_inspections
 
-  def self.reset
-    @@all_monkeys = []
-    @@round = 0
+  def self.build
+    @all_monkeys = []
+    @round = 0
+    file_name = '11.input.txt'
+    # file_name = '11.test.txt'
+    file = File.expand_path(file_name)
+    monkeys = File.read(file).split("\n\n")
+    monkeys.each do |monkey|
+      idx_line, items_line, operation_line, test_line, if_true_line, if_false_line = monkey.split("\n")
+      idx = idx_line.gsub('Monkey ', '').gsub(':', '')
+      items = items_line.gsub('  Starting items: ', '')
+      operation = operation_line.gsub('  Operation: ', '')
+      test = test_line.gsub('  Test: ', '')
+      if_true = if_true_line.gsub('    If true: ', '')
+      if_false = if_false_line.gsub('    If false: ', '')
+      Monkey.new(idx, items, operation, test, if_true, if_false)
+    end
+    nil
   end
 
   def self.find_monkey_by_index(idx, print: true)
     puts "    Attempting to find monkey #{idx}" if print
-    @@all_monkeys.select { |monkey| monkey.idx == idx }.first
+    @all_monkeys.select { |monkey| monkey.idx == idx }.first
   end
 
   def self.round(idx, downgrade: true, print: true)
-    @@round = idx
+    @round = idx
     puts "\nStarting round #{idx} - Downgrade: #{downgrade}" if print
-    @@all_monkeys.each { |monkey| monkey.inspect_items(downgrade: downgrade, print: print) }
+    @all_monkeys.each { |monkey| monkey.inspect_items(downgrade: downgrade, print: print) }
     puts "Round #{idx} complete!\n" if print
   end
 
-  def self.all_monkeys
-    @@all_monkeys
+  class << self
+    attr_reader :all_monkeys
   end
 
   def self.top_inspectors
-    @@all_monkeys.sort_by(&:total_inspections).reverse.first(2).map(&:total_inspections).inject(:*)
+    @all_monkeys.sort_by(&:total_inspections).reverse.first(2).map(&:total_inspections).inject(:*)
   end
 
   def self.tests_lcm
-    @@all_monkeys.map(&:test).inject(:lcm)
+    @all_monkeys.map(&:test).inject(:lcm)
   end
 
   def initialize(idx, starting_items, operation, test, true_conditions, false_conditions)
@@ -44,7 +61,7 @@ class Monkey
     @false_conditions = false_conditions.gsub('throw to monkey ', '').to_i
     @items = @starting_items.dup
     @total_inspections = 0
-    @@all_monkeys << self
+    Monkey.all_monkeys << self
   end
 
   def inspect_items(downgrade: true, print: true)
@@ -68,10 +85,10 @@ class Monkey
   end
 
   def to_s
-    "Monkey #{idx}\n" +
-      "  Has items: #{items}\n" +
-      "  Operations: #{operation}\n" +
-      "  Total inspections: #{total_inspections}\n" +
+    "Monkey #{idx}\n" \
+      "  Has items: #{items}\n" \
+      "  Operations: #{operation}\n" \
+      "  Total inspections: #{total_inspections}\n" \
       "  Thrown to monkeys: if true: #{true_conditions}, if false: #{false_conditions}\n"
   end
 
@@ -135,26 +152,8 @@ class Monkey
   end
 end
 
-def build
-  file_name = '11.input.txt'
-  # file_name = '11.test.txt'
-  file = File.expand_path(file_name)
-  monkeys = File.read(file).split("\n\n")
-  monkeys.each do |monkey|
-    idx_line, items_line, operation_line, test_line, if_true_line, if_false_line = monkey.split("\n")
-    idx = idx_line.gsub('Monkey ', '').gsub(':', '')
-    items = items_line.gsub('  Starting items: ', '')
-    operation = operation_line.gsub('  Operation: ', '')
-    test = test_line.gsub('  Test: ', '')
-    if_true = if_true_line.gsub('    If true: ', '')
-    if_false = if_false_line.gsub('    If false: ', '')
-    Monkey.new(idx, items, operation, test, if_true, if_false)
-  end
-  nil
-end
-
 # puts Monkey.all_monkeys.map(&:to_s)
-build
+Monkey.build
 rounds = 20
 rounds.times.with_index(1) do |_time, idx|
   Monkey.round(idx, downgrade: true, print: false)
@@ -169,16 +168,15 @@ puts "Top inspector monkeys after #{rounds} rounds: #{Monkey.top_inspectors}"
 # Top inspector monkeys after 20 rounds: 99852
 
 # ================================================ 2 =========================================================
-Monkey.reset
-build
+Monkey.build
 rounds = 10_000
 rounds.times.with_index(1) do |_time, idx|
   Monkey.round(idx, downgrade: false, print: false)
   # puts Monkey.all_monkeys.map(&:to_s)
   # if (idx % 1000).zero?
-    # puts idx
-    # puts Monkey.all_monkeys.map(&:to_s)
-    # puts "Top inspector monkeys: #{Monkey.top_inspectors}"
+  # puts idx
+  # puts Monkey.all_monkeys.map(&:to_s)
+  # puts "Top inspector monkeys: #{Monkey.top_inspectors}"
   # end
 end
 puts "Top inspector monkeys after #{rounds} rounds: #{Monkey.top_inspectors}"
