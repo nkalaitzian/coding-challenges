@@ -24,9 +24,10 @@ Style/MultilineBlockChain:
 
 AllCops:
   NewCops: enable
+  TargetRubyVersion: 3
 
 Metrics/MethodLength:
-  Max: 20
+  Enabled: false
 
 Metrics/CyclomaticComplexity:
   Enabled: false
@@ -38,4 +39,4 @@ Metrics/AbcSize:
   Enabled: false
 
 Metrics/ClassLength:
-  Max: 200
+  Enabled: false
