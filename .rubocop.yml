@@ -40,3 +40,6 @@ Metrics/AbcSize:
 
 Metrics/ClassLength:
   Enabled: false
+
+Style/WordArray:
+  Enabled: false
