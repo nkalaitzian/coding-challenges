@@ -2,7 +2,7 @@ Style/Encoding:
   Enabled: false
 
 Layout/LineLength:
-  Max: 100
+  Max: 150
 
 Layout/DotPosition:
   EnforcedStyle: trailing
@@ -43,3 +43,6 @@ Metrics/ClassLength:
 
 Style/WordArray:
   Enabled: false
+
+Style/SymbolArray:
+  Enabled: true
